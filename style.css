@@ -1,0 +1,15 @@
+canvas {
+	position: absolute;
+}
+
+#grid {
+	z-index: 1;
+}
+
+#ripple {
+	z-index: 2;
+}
+
+#blocks {
+	z-index: 3;
+}
