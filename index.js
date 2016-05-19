@@ -1,7 +1,8 @@
 $(document).ready(function () {
 
-	$('body').rs({
-		test: 'derp'
+	$('#animation_block').riptide({
+		width: 200,
+		height: 200
 	});
 
 });
