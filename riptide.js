@@ -39,7 +39,7 @@
 		height: 300,
 		style: {
 			gridColor: '#000',
-			canvasStyle: 'border:1px solid #000',
+			canvasStyle: 'border:1px solid #000;',
 			rippleStyle: 'rgba(0,0,0,0.0)',
 			blockFillStyle: '#D3D3D3'
 		}
@@ -51,17 +51,27 @@
 		self.generateCanvas();
 	};
 
+	/**
+	 * Creates the needed 3 layer canvas setup and applies the styles
+	 * 
+	 * @return void
+	 * @author Johan du Plessis
+	 */
 	Riptide.prototype.generateCanvas = function() {
+		var count = 1;
 		if (self.config.fullScreen) {
 			self.config.width = self.$element.width();
 			self.config.height = self.$element.height();
 		}
 		for (layout in self.config.layoutClasses) {
 			$('<canvas id="' + layout + '"></canvas>').attr({
-					width: self.config.width,
-					height: self.config.height,
-					style: self.config.style.canvasStyle
-				}).appendTo(this.$element);
+				width: self.config.width,
+				height: self.config.height,
+				style: self.config.style.canvasStyle
+			}).css({
+				'position': 'absolute',
+				'z-index': count++
+			}).appendTo(this.$element);
 
 			self.context[layout] = document.getElementById(layout).getContext("2d");
 		};
