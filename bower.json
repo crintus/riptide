@@ -15,7 +15,7 @@
 	"license": "MIT",
 	"ignore": [
 		"**/.*",
-		"example",
+		"example"
 	],
 	"dependencies": {
 		"jquery": ">=1.7"
