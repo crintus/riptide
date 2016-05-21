@@ -44,11 +44,11 @@
 		// Block options
 		blockWidth: 10,
 		blockHeight: 10,
-		blockFillStyle: '#D3D3D3',
-		blockStrokeStyle: '#C8C8C8',
+		blockFillStyle: '#578c22',
+		blockStrokeStyle: '#578c22',
 		blockLineWidth: 1,
 		blockType: 'fill', // fill or stroke
-		blockExcludeGridLines: false,
+		blockExcludeGridLines: true,
 		blockProbability: 90,
 		// Ripple options
 		rippleStyle: 'rgba(0,0,0,0.0)',
