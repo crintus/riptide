@@ -89,33 +89,26 @@
 	Riptide.prototype.drawGrid = function() {
 		this.complete = false;
 
-		self.context.grid.strokeStyle = self.config.style.gridColor;
-		self.context.grid.strokeRect(self.rectanglePosX,self.rectanglePosY,20,20);
+		do {
+			while (self.rectanglePosX < self.config.width) {
+				self.context.grid.rect(self.rectanglePosX,self.rectanglePosY,20,20);
 
-		// Populate the grid array
-		self.grid.push({
-			x: self.rectanglePosX,
-			y: self.rectanglePosY,
-			w: 20,
-			h: 20
-		});
-
-		self.rectanglePosX = self.rectanglePosX + 20;
-		if (self.rectanglePosX > self.config.width) {
-			if (self.rectanglePosY > self.config.width) {
-				this.complete = true;
-
-				// Start drawing the ripples
-				self.calcRipplePos();
-				self.drawRipple();
+				self.grid.push({
+					x: self.rectanglePosX,
+					y: self.rectanglePosY,
+					w: 20,
+					h: 20
+				});
+				self.rectanglePosX = self.rectanglePosX + 20;
 			}
 			self.rectanglePosX = 0;
 			self.rectanglePosY = self.rectanglePosY + 20;
-		}
+		} while (self.rectanglePosY < self.config.height);
 
-		if (!this.complete) {
-			requestAnimationFrame(self.drawGrid);
-		}
+		self.context.grid.stroke();
+
+		self.calcRipplePos();
+		self.drawRipple();
 	}
 
 	/**
@@ -180,10 +173,12 @@
 	 * @author Johan du Plessis
 	 */
 	Riptide.prototype.collisionCheck = function() {
+		var rcx, rcy, dist;
+
 		$.each(self.grid, function(key, rect) {
-			var rcx = Math.pow(Math.floor(rect.x) - Math.floor(self.ripplePosX),2);
-			var rcy = Math.pow(Math.floor(rect.y) - Math.floor(self.ripplePosY),2);
-			var dist = Math.sqrt(rcx + rcy);
+			rcx = Math.pow(Math.floor(rect.x) - Math.floor(self.ripplePosX),2);
+			rcy = Math.pow(Math.floor(rect.y) - Math.floor(self.ripplePosY),2);
+			dist = Math.sqrt(rcx + rcy);
 
 			if (self.radius > dist && Math.random() > 0.8) {
 				self.context.blocks.fillStyle = self.config.style.blockFillStyle;
