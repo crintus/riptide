@@ -47,8 +47,10 @@
 		blockLineWidth: 1,
 		blockType: 'fill', // fill or stroke
 		blockExcludeGridLines: false,
+		blockProbability: 90,
 		// Ripple options
 		rippleStyle: 'rgba(0,0,0,0.0)',
+		rippleSpeed: 1
 	};
 
 	Riptide.prototype.init = function() {
@@ -145,24 +147,19 @@
 	Riptide.prototype.drawRipple = function() {
 	    self.context.ripple.clearRect(0, 0, self.config.canvasWidth, self.config.canvasHeight);
 	     
-	    // draw the Ripple
 	    self.context.ripple.beginPath();
-
 	    self.context.ripple.arc(self.ripplePosX, self.ripplePosY, self.radius, 0, Math.PI * 2, false);
 	    self.context.ripple.closePath();
-
 	    // Making the ripple invisible before we stroke
 	    self.context.ripple.strokeStyle = self.config.rippleStyle;
-	     
 	    // draw the Ripple
 	    self.context.ripple.stroke();
-
 	    // Run the collisions check
 		self.collisionCheck();
 
-	    self.radius += 1;
+	    self.radius += self.config.rippleSpeed;
 
-	    if (self.radius > self.config.canvasWidth || self.radius > self.config.canvasHeight) {
+	    if (self.radius/1.8 > self.config.canvasWidth || self.radius/1.8 > self.config.canvasHeight) {
 	    	self.radius = 0;
 	    	self.calcRipplePos();
 	    	self.context.blocks.clearRect(0,0,self.config.canvasWidth,self.config.canvasHeight);
@@ -224,7 +221,7 @@
 			rcy = Math.pow(Math.floor(rect.y) - Math.floor(self.ripplePosY),2);
 			dist = Math.sqrt(rcx + rcy);
 
-			if (self.radius > dist && Math.random() > 0.99) {
+			if (self.radius > dist && Math.random()*100 > self.config.blockProbability) {
 				self.drawBlock(rect);
 			}
 		});
