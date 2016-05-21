@@ -1,23 +1,23 @@
 {
-  "name": "riptide",
-  "homepage": "https://github.com/crintus/riptide",
-  "authors": [
-    "Johan du Plessis"
-  ],
-  "version": "1.0.1",
-  "description": "Ripple effect with block on a multi-canvas setup",
-  "main": "riptide.min.js",
-  "keywords": [
-    "animation",
-    "canvas",
-    "ripple"
-  ],
-  "license": "MIT",
-  "ignore": [
-    "**/.*",
-    "example",
-  ],
-  "dependencies": {
-    "jquery": ">=1.7"
-  }
+	"name": "riptide",
+	"homepage": "https://github.com/crintus/riptide",
+	"authors": [
+		"Johan du Plessis"
+	],
+	"version": "1.0.1",
+	"description": "Ripple effect with block on a multi-canvas setup",
+	"main": "riptide.min.js",
+	"keywords": [
+		"animation",
+		"canvas",
+		"ripple"
+	],
+	"license": "MIT",
+	"ignore": [
+		"**/.*",
+		"example",
+	],
+	"dependencies": {
+		"jquery": ">=1.7"
+	}
 }
