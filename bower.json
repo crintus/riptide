@@ -4,6 +4,7 @@
   "authors": [
     "Johan du Plessis"
   ],
+  "version": "1.0.1",
   "description": "Ripple effect with block on a multi-canvas setup",
   "main": "riptide.min.js",
   "keywords": [
