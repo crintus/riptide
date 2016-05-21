@@ -1,8 +1,12 @@
 $(document).ready(function () {
 
 	$('#animation_block').riptide({
-		width: 200,
-		height: 200
+		canvasFullSize: true,
+		blockType: 'stroke',
+		blockExcludeGridLines: true,
+		gridLineWidth: 8,
+		blockFillStyle: 'red',
+		blockStrokeStyle: 'red'
 	});
 
 });

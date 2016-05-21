@@ -4,16 +4,15 @@
 			this.element  = element;
 			this.$element = $(element);
 			this.options  = options;
-
+			// To dynamically set the context
 			this.context = {
 				grid: '',
 				ripple: '',
 				blocks: ''
 			};
-
 			// Grid array that will store all the grid positions
 			this.grid = [];
-
+			// Some globals
 			this.radius = 0;
 			this.rectanglePosX = 0;
 			this.rectanglePosY = 0;
@@ -29,20 +28,27 @@
 
 	// Plugin defaults
 	Riptide.prototype.defaults = {
-		layoutClasses: {
+		// Canvas options
+		canvasLayoutClasses: {
 			grid: 'grid',
 			ripple: 'ripple',
 			blocks: 'blocks'
 		},
-		fullScreen: false,
-		width: 300,
-		height: 300,
-		style: {
-			gridColor: '#000',
-			canvasStyle: 'border:1px solid #000;',
-			rippleStyle: 'rgba(0,0,0,0.0)',
-			blockFillStyle: '#D3D3D3'
-		}
+		canvasFullSize: false,
+		canvasWidth: 300,
+		canvasHeight: 300,
+		canvasStyle: 'border:1px solid #D3D3D3;',
+		// Grid options
+		gridStrokeStyle: '#D3D3D3',
+		gridLineWidth: 1,
+		// Block options
+		blockFillStyle: '#D3D3D3',
+		blockStrokeStyle: '#C8C8C8',
+		blockLineWidth: 1,
+		blockType: 'fill', // fill or stroke
+		blockExcludeGridLines: false,
+		// Ripple options
+		rippleStyle: 'rgba(0,0,0,0.0)',
 	};
 
 	Riptide.prototype.init = function() {
@@ -59,15 +65,15 @@
 	 */
 	Riptide.prototype.generateCanvas = function() {
 		var count = 1;
-		if (self.config.fullScreen) {
-			self.config.width = self.$element.width();
-			self.config.height = self.$element.height();
+		if (self.config.canvasFullSize) {
+			self.config.canvasWidth = self.$element.width();
+			self.config.canvasHeight = self.$element.height();
 		}
-		for (layout in self.config.layoutClasses) {
+		for (layout in self.config.canvasLayoutClasses) {
 			$('<canvas id="' + layout + '"></canvas>').attr({
-				width: self.config.width,
-				height: self.config.height,
-				style: self.config.style.canvasStyle
+				width: self.config.canvasWidth,
+				height: self.config.canvasHeight,
+				style: self.config.canvasStyle
 			}).css({
 				'position': 'absolute',
 				'z-index': count++
@@ -89,8 +95,8 @@
 	Riptide.prototype.drawGrid = function() {
 		this.complete = false;
 
-		do {
-			while (self.rectanglePosX < self.config.width) {
+		while (self.rectanglePosY < self.config.canvasHeight) {
+			while (self.rectanglePosX < self.config.canvasWidth) {
 				self.context.grid.rect(self.rectanglePosX,self.rectanglePosY,20,20);
 
 				self.grid.push({
@@ -103,8 +109,10 @@
 			}
 			self.rectanglePosX = 0;
 			self.rectanglePosY = self.rectanglePosY + 20;
-		} while (self.rectanglePosY < self.config.height);
+		};
 
+		self.context.grid.strokeStyle = self.config.gridStrokeStyle;
+		self.context.grid.lineWidth = self.config.gridLineWidth;
 		self.context.grid.stroke();
 
 		self.calcRipplePos();
@@ -119,11 +127,11 @@
 	 */
 	Riptide.prototype.calcRipplePos = function() {
 		if (Math.random() > 0.5) {
-			self.ripplePosX = self.config.width - (self.config.width * Math.random())/3;
-			self.ripplePosY = self.config.height - (self.config.height * Math.random());
+			self.ripplePosX = self.config.canvasWidth - (self.config.canvasWidth * Math.random())/3;
+			self.ripplePosY = self.config.canvasHeight - (self.config.canvasHeight * Math.random());
 		} else {
-			self.ripplePosX = 0 + (self.config.width * Math.random())/3;
-			self.ripplePosY = 0 + (self.config.height * Math.random());
+			self.ripplePosX = 0 + (self.config.canvasWidth * Math.random())/3;
+			self.ripplePosY = 0 + (self.config.canvasHeight * Math.random());
 		}
 	}
 
@@ -135,7 +143,7 @@
 	 * @author Johan du Plessis
 	 */
 	Riptide.prototype.drawRipple = function() {
-	    self.context.ripple.clearRect(0, 0, self.config.width, self.config.height);
+	    self.context.ripple.clearRect(0, 0, self.config.canvasWidth, self.config.canvasHeight);
 	     
 	    // draw the Ripple
 	    self.context.ripple.beginPath();
@@ -144,7 +152,7 @@
 	    self.context.ripple.closePath();
 
 	    // Making the ripple invisible before we stroke
-	    self.context.ripple.strokeStyle = self.config.style.rippleStyle;
+	    self.context.ripple.strokeStyle = self.config.rippleStyle;
 	     
 	    // draw the Ripple
 	    self.context.ripple.stroke();
@@ -154,14 +162,50 @@
 
 	    self.radius += 1;
 
-	    if (self.radius > self.config.width || self.radius > self.config.height) {
+	    if (self.radius > self.config.canvasWidth || self.radius > self.config.canvasHeight) {
 	    	self.radius = 0;
 	    	self.calcRipplePos();
-	    	self.context.blocks.clearRect(0,0,self.config.width,self.config.height);
+	    	self.context.blocks.clearRect(0,0,self.config.canvasWidth,self.config.canvasHeight);
 	    }
 
 	    requestAnimationFrame(self.drawRipple);
 	}
+
+	/**
+	 * Draws the active blocks
+	 * Style depends on options
+	 *
+	 * @param  object rect Rectangle that will be drawn
+	 * @return mixed Return when blockType == 'stroke' or blockExcludeGridLines == true
+	 * @author Johan du Plessis
+	 */
+	Riptide.prototype.drawBlock = function(rect) {
+		if (self.config.blockType == 'stroke') {
+			if (self.options.gridLineWidth != undefined && self.options.blocksLineWidth == undefined) {
+				self.config.blocksLineWidth = self.options.gridLineWidth;
+			}
+			self.context.blocks.lineWidth = self.config.blocksLineWidth;
+			self.context.blocks.strokeStyle = self.config.blockStrokeStyle;
+			self.context.blocks.strokeRect(rect.x,rect.y,rect.w,rect.h);
+			return;
+		}
+
+		// This will keep the grid visible while filling the blocks
+		if (self.config.blockExcludeGridLines) {
+			self.context.blocks.fillStyle = self.config.blockFillStyle;
+			self.context.blocks.fillRect(
+					rect.x + self.config.gridLineWidth/2,
+					rect.y + self.config.gridLineWidth/2,
+					rect.w - self.config.gridLineWidth,
+					rect.h - self.config.gridLineWidth
+				);
+			return;
+		}
+
+		// Default fillRect
+		self.context.blocks.fillStyle = self.config.blockFillStyle;
+		self.context.blocks.fillRect(rect.x,rect.y,rect.w,rect.h);
+	};
 
 	/**
 	 * Detect collision between grid blocks and ripple
@@ -180,9 +224,8 @@
 			rcy = Math.pow(Math.floor(rect.y) - Math.floor(self.ripplePosY),2);
 			dist = Math.sqrt(rcx + rcy);
 
-			if (self.radius > dist && Math.random() > 0.8) {
-				self.context.blocks.fillStyle = self.config.style.blockFillStyle;
-				self.context.blocks.fillRect(rect.x,rect.y,rect.w,rect.h);
+			if (self.radius > dist && Math.random() > 0.99) {
+				self.drawBlock(rect);
 			}
 		});
 	}
