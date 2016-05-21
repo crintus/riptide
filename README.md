@@ -2,6 +2,11 @@
 
 Create a ripple effect with blocks on a multi-canvas setup using javascript. Riptide uses a 3 layer canvas setup to do the animations. These 3 layers can be individually configured for your desired effect.
 
+## Install
+```
+bower install --save riptide
+```
+
 ## Usage
 
 #### HTML
