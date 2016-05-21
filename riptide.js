@@ -42,6 +42,8 @@
 		gridStrokeStyle: '#D3D3D3',
 		gridLineWidth: 1,
 		// Block options
+		blockWidth: 10,
+		blockHeight: 10,
 		blockFillStyle: '#D3D3D3',
 		blockStrokeStyle: '#C8C8C8',
 		blockLineWidth: 1,
@@ -50,7 +52,9 @@
 		blockProbability: 90,
 		// Ripple options
 		rippleStyle: 'rgba(0,0,0,0.0)',
-		rippleSpeed: 1
+		rippleSpeed: 1,
+		// Taste the rainbow
+		tasteTheRainbow: false
 	};
 
 	Riptide.prototype.init = function() {
@@ -99,18 +103,19 @@
 
 		while (self.rectanglePosY < self.config.canvasHeight) {
 			while (self.rectanglePosX < self.config.canvasWidth) {
-				self.context.grid.rect(self.rectanglePosX,self.rectanglePosY,20,20);
+				self.context.grid.rect(self.rectanglePosX,self.rectanglePosY,self.config.blockWidth,self.config.blockHeight);
 
 				self.grid.push({
 					x: self.rectanglePosX,
 					y: self.rectanglePosY,
-					w: 20,
-					h: 20
+					w: self.config.blockWidth,
+					h: self.config.blockHeight,
+					active: false
 				});
-				self.rectanglePosX = self.rectanglePosX + 20;
+				self.rectanglePosX = self.rectanglePosX + self.config.blockWidth;
 			}
 			self.rectanglePosX = 0;
-			self.rectanglePosY = self.rectanglePosY + 20;
+			self.rectanglePosY = self.rectanglePosY + self.config.blockHeight;
 		};
 
 		self.context.grid.strokeStyle = self.config.gridStrokeStyle;
@@ -161,6 +166,7 @@
 
 	    if (self.radius/1.8 > self.config.canvasWidth || self.radius/1.8 > self.config.canvasHeight) {
 	    	self.radius = 0;
+	    	self.clearActiveRectangles();
 	    	self.calcRipplePos();
 	    	self.context.blocks.clearRect(0,0,self.config.canvasWidth,self.config.canvasHeight);
 	    }
@@ -177,6 +183,13 @@
 	 * @author Johan du Plessis
 	 */
 	Riptide.prototype.drawBlock = function(rect) {
+
+		if (self.config.tasteTheRainbow) {
+			self.context.blocks.fillStyle = self.tasteTheRainbow();
+		} else {
+			self.context.blocks.fillStyle = self.config.blockFillStyle;
+		}
+
 		if (self.config.blockType == 'stroke') {
 			if (self.options.gridLineWidth != undefined && self.options.blocksLineWidth == undefined) {
 				self.config.blocksLineWidth = self.options.gridLineWidth;
@@ -189,7 +202,6 @@
 
 		// This will keep the grid visible while filling the blocks
 		if (self.config.blockExcludeGridLines) {
-			self.context.blocks.fillStyle = self.config.blockFillStyle;
 			self.context.blocks.fillRect(
 					rect.x + self.config.gridLineWidth/2,
 					rect.y + self.config.gridLineWidth/2,
@@ -200,8 +212,21 @@
 		}
 
 		// Default fillRect
-		self.context.blocks.fillStyle = self.config.blockFillStyle;
 		self.context.blocks.fillRect(rect.x,rect.y,rect.w,rect.h);
+	};
+
+	/**
+	 * Taste the rainbow
+	 * @return string random color
+	 */
+	Riptide.prototype.tasteTheRainbow = function() {
+		var color = '#';
+		var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+		for( var i=0; i < 6; i++ ) {
+	        color += possible.charAt(Math.floor(Math.random() * possible.length));
+	    }
+
+	    return color;
 	};
 
 	/**
@@ -221,11 +246,18 @@
 			rcy = Math.pow(Math.floor(rect.y) - Math.floor(self.ripplePosY),2);
 			dist = Math.sqrt(rcx + rcy);
 
-			if (self.radius > dist && Math.random()*100 > self.config.blockProbability) {
+			if (!rect.active && self.radius > dist && Math.random()*100 > self.config.blockProbability) {
 				self.drawBlock(rect);
+				self.grid[key].active = true;
 			}
 		});
 	}
+
+	Riptide.prototype.clearActiveRectangles = function() {
+		$.each(self.grid, function(key, rect) {
+			self.grid[key].active = false;
+		});
+	};
 
 	$.fn.riptide = function(options) {
 		return this.each(function() {
