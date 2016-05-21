@@ -5,6 +5,11 @@ Create a ripple effect with blocks on a multi-canvas setup using javascript. Rip
 ## Preview
 You can see a preview of it on [Codepen](http://codepen.io/Crintus/pen/JXzZOO?editors=0010) and play around a bit
 
+## Install
+```
+bower install --save riptide
+```
+
 ## Usage
 
 #### HTML
