@@ -86,4 +86,6 @@ Examples of how to use riptide can be seen in `/example`. This directory contain
 jQuery >= 1.7
 
 #### ToDo
-Fix ripple just "jumping" back to start. It should either be able to alternate between colors, or retract
+- Fix ripple just "jumping" back to start. It should either be able to alternate between colors, or retract
+- Add option for multiple ripples
+- Add option for ripples on click
